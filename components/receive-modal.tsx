@@ -129,15 +129,15 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
     >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{isComplete ? "Request Complete" : `Receive Crypto - Step ${step} of 3`}</DialogTitle>
+          <DialogTitle>{isComplete ? "Purchase Complete" : `Buy Crypto - Step ${step} of 3`}</DialogTitle>
           <DialogDescription>
             {isComplete
-              ? "Your request has been successfully created."
+              ? "Your purchase has been successfully completed."
               : step === 1
-                ? "Enter the amount you want to receive."
+                ? "Enter the amount you want to buy."
                 : step === 2
                   ? "Enter your payment details."
-                  : "Review your request details."}
+                  : "Review your purchase details."}
           </DialogDescription>
         </DialogHeader>
 
@@ -147,14 +147,14 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
               <Check className="h-6 w-6 text-green-600" />
             </div>
             <p className="text-center">
-              You have successfully requested {fiatAmount} {fiatCurrency}({getExpectedCryptoAmount()}{" "}
-              {getSelectedCrypto().symbol}) from {accountName}
+              You have successfully purchased {getExpectedCryptoAmount()} {getSelectedCrypto().symbol} for {fiatAmount}{" "}
+              {fiatCurrency}
             </p>
           </div>
         ) : isLoading ? (
           <div className="flex flex-col items-center justify-center py-6">
             <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-center">Processing your request...</p>
+            <p className="text-center">Processing your purchase...</p>
           </div>
         ) : (
           <>
@@ -187,7 +187,7 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="to-crypto">Receive in (Cryptocurrency)</Label>
+                  <Label htmlFor="to-crypto">Buy (Cryptocurrency)</Label>
                   <Select value={toCryptoId} onValueChange={setToCryptoId}>
                     <SelectTrigger id="to-crypto">
                       <SelectValue placeholder="Select cryptocurrency" />
@@ -313,4 +313,3 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
     </Dialog>
   )
 }
-

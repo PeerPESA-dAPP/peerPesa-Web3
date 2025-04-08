@@ -260,4 +260,3 @@ export default function SwapModal({ open, onOpenChange, cryptoCurrencies, onSucc
     </Dialog>
   )
 }
-

@@ -324,4 +324,3 @@ export default function SendModal({ open, onOpenChange, cryptoCurrencies, select
     </Dialog>
   )
 }
-

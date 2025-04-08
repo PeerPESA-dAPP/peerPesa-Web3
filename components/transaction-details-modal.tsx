@@ -217,4 +217,3 @@ export default function TransactionDetailsModal({ open, onOpenChange, transactio
     </Dialog>
   )
 }
-

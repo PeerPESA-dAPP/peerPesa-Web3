@@ -47,4 +47,3 @@ export default function CryptoBalanceCard({ crypto, isSelected, onClick }: Crypt
     </Card>
   )
 }
-
