@@ -1,8 +1,29 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { WagmiProvider, createConfig, http } from 'wagmi';
+import { mainnet } from 'wagmi/chains';
+import { injected } from 'wagmi/connectors';
+import { sepolia } from 'wagmi/chains';
+
+// const config = createConfig({
+//   chains: [mainnet],
+//   connectors: [injected()],
+//   transports: {
+//     [mainnet.id]: http(), // or http('https://rpc-url')
+//   },
+// });
+// using test net 
+const config = createConfig({
+  chains: [sepolia],
+  connectors: [injected()],
+  transports: {
+    [sepolia.id]: http('https://sepolia.infura.io/v3/b5833426d2934f8caa7c1d3654cc967b'), // or Alchemy/Ankr
+  },
+});
+
 import Image from "next/image"
 import { ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -15,6 +36,8 @@ import ReceiveModal from "@/components/receive-modal"
 import SwapModal from "@/components/swap-modal"
 import SettingsModal from "@/components/settings-modal"
 import CryptoBalanceCard from "@/components/crypto-balance-card"
+
+const queryClient = new QueryClient()
 
 // Define cryptocurrency types
 interface CryptoCurrency {
@@ -92,7 +115,9 @@ export default function Home() {
   // Update the main container to maintain mobile width on desktop
   // Change the outer div to add a max-width and center it
   return (
-    <div className="flex justify-center min-h-screen bg-gray-100">
+     <WagmiProvider config={config}> 
+     <QueryClientProvider client={queryClient}>
+     <div className="flex justify-center min-h-screen bg-gray-100">
       <div className="flex flex-col w-full max-w-[480px] bg-white shadow-xl">
         <Header onSettingsClick={() => setSettingsOpen(true)} />
 
@@ -246,6 +271,8 @@ export default function Home() {
 
         <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
       </div>
-    </div>
+     </div>
+     </QueryClientProvider>
+    </WagmiProvider>  
   )
 }
