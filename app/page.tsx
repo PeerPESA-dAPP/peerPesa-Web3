@@ -53,45 +53,45 @@ interface CryptoCurrency {
 export default function Home() {
   // Updated cryptocurrency data with actual logo images
   const cryptoCurrencies: CryptoCurrency[] = [
-    {
-      id: "usdt",
-      name: "Tether",
-      symbol: "USDT",
-      balance: "350.75",
-      fiatValue: "$350.75",
-      icon: <Image src="/images/tether-usdt-logo.png" alt="USDT" width={24} height={24} className="w-6 h-6" />,
-      color: "#26A17B",
-    },
-    {
-      id: "usdc",
-      name: "USD Coin",
-      symbol: "USDC",
-      balance: "425.50",
-      fiatValue: "$425.50",
-      icon: <Image src="/images/usd-coin-usdc-logo.png" alt="USDC" width={24} height={24} className="w-6 h-6" />,
-      color: "#2775CA",
-    },
-    {
-      id: "cusd",
-      name: "Celo Dollar",
-      symbol: "cUSD",
-      balance: "210.25",
-      fiatValue: "$210.25",
-      icon: <Image src="/images/cusd-logo.png" alt="cUSD" width={24} height={24} className="w-6 h-6" />,
-      color: "#35D07F",
-    },
-    {
-      id: "celo",
-      name: "Celo",
-      symbol: "CELO",
-      balance: "45.75",
-      fiatValue: "$68.63",
-      icon: <Image src="/images/celo-celo-logo.png" alt="CELO" width={24} height={24} className="w-6 h-6" />,
-      color: "#FBCC5C",
-    },
+    // {
+    //   id: "usdt",
+    //   name: "Tether",
+    //   symbol: "USDT",
+    //   balance: "350.75",
+    //   fiatValue: "$350.75",
+    //   icon: <Image src="/images/tether-usdt-logo.png" alt="USDT" width={24} height={24} className="w-6 h-6" />,
+    //   color: "#26A17B",
+    // },
+    // {
+    //   id: "usdc",
+    //   name: "USD Coin",
+    //   symbol: "USDC",
+    //   balance: "425.50",
+    //   fiatValue: "$425.50",
+    //   icon: <Image src="/images/usd-coin-usdc-logo.png" alt="USDC" width={24} height={24} className="w-6 h-6" />,
+    //   color: "#2775CA",
+    // },
+    // {
+    //   id: "cusd",
+    //   name: "Celo Dollar",
+    //   symbol: "cUSD",
+    //   balance: "210.25",
+    //   fiatValue: "$210.25",
+    //   icon: <Image src="/images/cusd-logo.png" alt="cUSD" width={24} height={24} className="w-6 h-6" />,
+    //   color: "#35D07F",
+    // },
+    // {
+    //   id: "celo",
+    //   name: "Celo",
+    //   symbol: "CELO",
+    //   balance: "45.75",
+    //   fiatValue: "$68.63",
+    //   icon: <Image src="/images/celo-celo-logo.png" alt="CELO" width={24} height={24} className="w-6 h-6" />,
+    //   color: "#FBCC5C",
+    // },
   ]
 
-  const [selectedCrypto, setSelectedCrypto] = useState<CryptoCurrency>(cryptoCurrencies[0])
+  const [selectedCrypto, setSelectedCrypto] = useState<CryptoCurrency>(cryptoCurrencies[0] ?? {})
   const [sendOpen, setSendOpen] = useState(false)
   const [receiveOpen, setReceiveOpen] = useState(false)
   const [swapOpen, setSwapOpen] = useState(false)
@@ -185,7 +185,7 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 gap-4">
-              {cryptoCurrencies.map((crypto) => (
+              {cryptoCurrencies.length > 0 && cryptoCurrencies.map((crypto) => (
                 <CryptoBalanceCard
                   key={crypto.id}
                   crypto={crypto}

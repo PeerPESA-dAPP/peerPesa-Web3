@@ -36,6 +36,14 @@ interface SendModalProps {
   onSuccess: (cryptoId: string, amount: string) => void
 }
 
+// Add validation constants
+const VALIDATION = {
+  MIN_AMOUNT: 0.001,
+  MAX_AMOUNT: 1000000,
+  MOBILE_MONEY_REGEX: /^(?:\+256|0)[7-9]\d{8}$/,
+  BANK_ACCOUNT_REGEX: /^\d{10,14}$/,
+}
+
 export default function SendModal({ open, onOpenChange, cryptoCurrencies, selectedCrypto, onSuccess }: SendModalProps) {
   const [step, setStep] = useState(1)
   const [fromCryptoId, setFromCryptoId] = useState(selectedCrypto.id)
@@ -46,6 +54,11 @@ export default function SendModal({ open, onOpenChange, cryptoCurrencies, select
   const [amount, setAmount] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
+  const [errors, setErrors] = useState<{
+    amount?: string
+    accountNumber?: string
+    accountName?: string
+  }>({})
 
   // Mock exchange rates
   const rates = {
@@ -62,6 +75,81 @@ export default function SendModal({ open, onOpenChange, cryptoCurrencies, select
   const getRateForPair = (from: string, to: string) => {
     const key = `${from}-${to}`
     return rates[key as keyof typeof rates] || 1
+  }
+
+  // Add validation functions
+  const validateAmount = (value: string) => {
+    const numValue = Number.parseFloat(value)
+    const selectedCrypto = getSelectedCrypto()
+    const balance = Number.parseFloat(selectedCrypto.balance)
+
+    if (isNaN(numValue) || numValue <= 0) {
+      return "Amount must be greater than 0"
+    }
+    if (numValue < VALIDATION.MIN_AMOUNT) {
+      return `Minimum amount is ${VALIDATION.MIN_AMOUNT} ${selectedCrypto.symbol}`
+    }
+    if (numValue > VALIDATION.MAX_AMOUNT) {
+      return `Maximum amount is ${VALIDATION.MAX_AMOUNT} ${selectedCrypto.symbol}`
+    }
+    if (numValue > balance) {
+      return `Insufficient balance. Available: ${balance} ${selectedCrypto.symbol}`
+    }
+    return undefined
+  }
+
+  const validateAccountNumber = (value: string, method: string) => {
+    if (!value) return "Account number is required"
+    
+    if (method === "Mobile Money") {
+      if (!VALIDATION.MOBILE_MONEY_REGEX.test(value)) {
+        return "Please enter a valid Uganda mobile money number (e.g., +2567XXXXXXXX or 07XXXXXXXX)"
+      }
+    } else {
+      if (!VALIDATION.BANK_ACCOUNT_REGEX.test(value)) {
+        return "Please enter a valid bank account number (10-14 digits)"
+      }
+    }
+    return undefined
+  }
+
+  const validateAccountName = (value: string) => {
+    if (!value) return "Account name is required"
+    if (value.length < 3) return "Account name must be at least 3 characters"
+    if (value.length > 100) return "Account name must be less than 100 characters"
+    return undefined
+  }
+
+  // Update amount change handler
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setAmount(value)
+    const error = validateAmount(value)
+    setErrors(prev => ({ ...prev, amount: error }))
+  }
+
+  // Update account number change handler
+  const handleAccountNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setAccountNumber(value)
+    const error = validateAccountNumber(value, paymentMethod)
+    setErrors(prev => ({ ...prev, accountNumber: error }))
+  }
+
+  // Update account name change handler
+  const handleAccountNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setAccountName(value)
+    const error = validateAccountName(value)
+    setErrors(prev => ({ ...prev, accountName: error }))
+  }
+
+  // Update payment method change handler
+  const handlePaymentMethodChange = (value: string) => {
+    setPaymentMethod(value)
+    // Revalidate account number when payment method changes
+    const error = validateAccountNumber(accountNumber, value)
+    setErrors(prev => ({ ...prev, accountNumber: error }))
   }
 
   const handleNext = () => {
@@ -93,6 +181,7 @@ export default function SendModal({ open, onOpenChange, cryptoCurrencies, select
     }
   }
 
+  // Update resetForm to clear errors
   const resetForm = () => {
     setStep(1)
     setFromCryptoId(selectedCrypto.id)
@@ -102,14 +191,17 @@ export default function SendModal({ open, onOpenChange, cryptoCurrencies, select
     setAccountNumber("")
     setAmount("")
     setIsComplete(false)
+    setErrors({})
   }
 
   const isNextDisabled = () => {
     if (step === 1) {
-      return !fromCryptoId || !toFiat || !paymentMethod || !amount || Number.parseFloat(amount) <= 0
+      return !fromCryptoId || !toFiat || !paymentMethod || !amount || 
+             !!errors.amount || Number.parseFloat(amount) <= 0
     }
     if (step === 2) {
-      return !accountName || !accountNumber
+      return !accountName || !accountNumber || 
+             !!errors.accountName || !!errors.accountNumber
     }
     return false
   }
@@ -206,10 +298,14 @@ export default function SendModal({ open, onOpenChange, cryptoCurrencies, select
                     type="number"
                     placeholder="0.0"
                     step="0.001"
-                    min="0.001"
+                    min={VALIDATION.MIN_AMOUNT}
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={handleAmountChange}
+                    className={errors.amount ? "border-destructive" : ""}
                   />
+                  {errors.amount && (
+                    <p className="text-sm text-destructive">{errors.amount}</p>
+                  )}
                   <p className="text-sm text-muted-foreground">
                     ≈ {getExpectedFiatAmount()} {toFiat}
                   </p>
@@ -217,7 +313,11 @@ export default function SendModal({ open, onOpenChange, cryptoCurrencies, select
 
                 <div className="grid gap-2">
                   <Label>Payment Method</Label>
-                  <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="grid grid-cols-2 gap-4">
+                  <RadioGroup 
+                    value={paymentMethod} 
+                    onValueChange={handlePaymentMethodChange} 
+                    className="grid grid-cols-2 gap-4"
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="Mobile Money" id="mobile-money" />
                       <Label htmlFor="mobile-money">Mobile Money</Label>
@@ -239,18 +339,26 @@ export default function SendModal({ open, onOpenChange, cryptoCurrencies, select
                     id="account-name"
                     placeholder="Enter recipient's name"
                     value={accountName}
-                    onChange={(e) => setAccountName(e.target.value)}
+                    onChange={handleAccountNameChange}
+                    className={errors.accountName ? "border-destructive" : ""}
                   />
+                  {errors.accountName && (
+                    <p className="text-sm text-destructive">{errors.accountName}</p>
+                  )}
                 </div>
 
                 <div className="grid gap-2">
                   <Label htmlFor="account-number">Account Number</Label>
                   <Input
                     id="account-number"
-                    placeholder={paymentMethod === "Mobile Money" ? "Enter phone number" : "Enter account number"}
+                    placeholder={paymentMethod === "Mobile Money" ? "Enter phone number (e.g., +2567XXXXXXXX)" : "Enter account number"}
                     value={accountNumber}
-                    onChange={(e) => setAccountNumber(e.target.value)}
+                    onChange={handleAccountNumberChange}
+                    className={errors.accountNumber ? "border-destructive" : ""}
                   />
+                  {errors.accountNumber && (
+                    <p className="text-sm text-destructive">{errors.accountNumber}</p>
+                  )}
                 </div>
 
                 <div className="text-sm text-muted-foreground">
