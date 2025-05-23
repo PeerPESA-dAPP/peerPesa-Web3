@@ -1,32 +1,19 @@
 // lib/walletConnect.ts
-import { configureChains, createConfig } from 'wagmi';
+import { createConfig, http } from 'wagmi';
 import { mainnet, polygon, arbitrum } from 'wagmi/chains';
-import { publicProvider } from 'wagmi/providers/public';
-import { walletConnectProvider } from '@web3modal/ethereum';
-import { EthereumClient } from '@web3modal/ethereum';
-import { Web3Modal } from '@web3modal/wagmi';
-import { http } from 'wagmi';
+import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
 
 const projectId = 'eafc42381cbec5c38e917e067bee2a28'; // get this from https://cloud.walletconnect.com/
 
-const { chains, publicClient } = configureChains(
-  [mainnet, polygon, arbitrum],
-  [walletConnectProvider({ projectId }), publicProvider()]
-);
+const metadata = {
+  name: 'PeerPesa',
+  description: 'PeerPesa Web3 Application',
+  url: 'https://peerpesa.com', // origin must match your domain & subdomain
+  icons: ['https://peerpesa.com/icon.png']
+};
 
-export const wagmiConfig = createConfig({
-  chains: [mainnet, polygon, arbitrum],
-  connectors: [],
-  transports: {
-    [mainnet.id]: http(),
-    [polygon.id]: http(),
-    [arbitrum.id]: http(),
-  },
-});
+const chains = [mainnet, polygon, arbitrum] as const;
 
-export const ethereumClient = new EthereumClient(wagmiConfig, chains);
+export const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
-export const web3modal = new Web3Modal({
-  projectId,
-  ethereumClient,
-});
+// Remove the createWeb3Modal call from here - it should be called in a component

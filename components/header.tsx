@@ -4,11 +4,11 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 // import { useConnect } from "wagmi";
 // import { InjectedConnector } from 'wagmi/connectors/injected'
-import { useConnect, useAccount, useDisconnect } from 'wagmi'
+import { useConnect } from 'wagmi'
 import { injected } from "@wagmi/connectors";
 
-const { address, isConnected } = useAccount();
-const { disconnect } = useDisconnect();
+// const { address, isConnected } = useAccount();
+// const { disconnect } = useDisconnect();
 
 
 interface HeaderProps {
