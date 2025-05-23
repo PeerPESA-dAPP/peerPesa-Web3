@@ -35,17 +35,30 @@ interface ReceiveModalProps {
   cryptoCurrencies: CryptoCurrency[]
 }
 
+// Add validation constants
+const VALIDATION = {
+  MIN_FIAT_AMOUNT: 1000, // Minimum 1000 UGX
+  MAX_FIAT_AMOUNT: 10000000, // Maximum 10M UGX
+  MOBILE_MONEY_REGEX: /^(?:\+256|0)[7-9]\d{8}$/,
+  BANK_ACCOUNT_REGEX: /^\d{10,14}$/,
+}
+
 export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: ReceiveModalProps) {
   const { toast } = useToast()
   const [step, setStep] = useState(1)
   const [fiatAmount, setFiatAmount] = useState("")
   const [fiatCurrency, setFiatCurrency] = useState("UGX")
-  const [toCryptoId, setToCryptoId] = useState(cryptoCurrencies[0].id)
+  const [toCryptoId, setToCryptoId] = useState(cryptoCurrencies[0]?.id ?? "")
   const [paymentMethod, setPaymentMethod] = useState("Mobile Money")
   const [accountName, setAccountName] = useState("")
   const [accountNumber, setAccountNumber] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
+  const [errors, setErrors] = useState<{
+    fiatAmount?: string
+    accountNumber?: string
+    accountName?: string
+  }>({})
 
   // Mock exchange rates (inverse of send rates)
   const rates = {
@@ -68,6 +81,76 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
     if (!fiatAmount || isNaN(Number.parseFloat(fiatAmount))) return "0"
     const rate = getRateForPair(fiatCurrency, toCryptoId)
     return (Number.parseFloat(fiatAmount) * rate).toFixed(8)
+  }
+
+  // Add validation functions
+  const validateFiatAmount = (value: string) => {
+    const numValue = Number.parseFloat(value)
+    
+    if (isNaN(numValue) || numValue <= 0) {
+      return "Amount must be greater than 0"
+    }
+    if (numValue < VALIDATION.MIN_FIAT_AMOUNT) {
+      return `Minimum amount is ${VALIDATION.MIN_FIAT_AMOUNT} ${fiatCurrency}`
+    }
+    if (numValue > VALIDATION.MAX_FIAT_AMOUNT) {
+      return `Maximum amount is ${VALIDATION.MAX_FIAT_AMOUNT} ${fiatCurrency}`
+    }
+    return undefined
+  }
+
+  const validateAccountNumber = (value: string, method: string) => {
+    if (!value) return "Account number is required"
+    
+    if (method === "Mobile Money") {
+      if (!VALIDATION.MOBILE_MONEY_REGEX.test(value)) {
+        return "Please enter a valid Uganda mobile money number (e.g., +2567XXXXXXXX or 07XXXXXXXX)"
+      }
+    } else {
+      if (!VALIDATION.BANK_ACCOUNT_REGEX.test(value)) {
+        return "Please enter a valid bank account number (10-14 digits)"
+      }
+    }
+    return undefined
+  }
+
+  const validateAccountName = (value: string) => {
+    if (!value) return "Account name is required"
+    if (value.length < 3) return "Account name must be at least 3 characters"
+    if (value.length > 100) return "Account name must be less than 100 characters"
+    return undefined
+  }
+
+  // Update amount change handler
+  const handleFiatAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setFiatAmount(value)
+    const error = validateFiatAmount(value)
+    setErrors(prev => ({ ...prev, fiatAmount: error }))
+  }
+
+  // Update account number change handler
+  const handleAccountNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setAccountNumber(value)
+    const error = validateAccountNumber(value, paymentMethod)
+    setErrors(prev => ({ ...prev, accountNumber: error }))
+  }
+
+  // Update account name change handler
+  const handleAccountNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setAccountName(value)
+    const error = validateAccountName(value)
+    setErrors(prev => ({ ...prev, accountName: error }))
+  }
+
+  // Update payment method change handler
+  const handlePaymentMethodChange = (value: string) => {
+    setPaymentMethod(value)
+    // Revalidate account number when payment method changes
+    const error = validateAccountNumber(accountNumber, value)
+    setErrors(prev => ({ ...prev, accountNumber: error }))
   }
 
   const handleNext = () => {
@@ -98,6 +181,7 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
     }
   }
 
+  // Update resetForm to clear errors
   const resetForm = () => {
     setStep(1)
     setFiatAmount("")
@@ -107,14 +191,18 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
     setAccountName("")
     setAccountNumber("")
     setIsComplete(false)
+    setErrors({})
   }
 
+  // Update isNextDisabled function
   const isNextDisabled = () => {
     if (step === 1) {
-      return !fiatAmount || Number.parseFloat(fiatAmount) <= 0 || !fiatCurrency || !toCryptoId
+      return !fiatAmount || !fiatCurrency || !toCryptoId || 
+             !!errors.fiatAmount || Number.parseFloat(fiatAmount) <= 0
     }
     if (step === 2) {
-      return !accountName || !accountNumber || !paymentMethod
+      return !accountName || !accountNumber || !paymentMethod ||
+             !!errors.accountName || !!errors.accountNumber
     }
     return false
   }
@@ -166,10 +254,17 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
                     id="fiat-amount"
                     type="number"
                     placeholder="0"
-                    min="1000"
+                    min={VALIDATION.MIN_FIAT_AMOUNT}
                     value={fiatAmount}
-                    onChange={(e) => setFiatAmount(e.target.value)}
+                    onChange={handleFiatAmountChange}
+                    className={errors.fiatAmount ? "border-destructive" : ""}
                   />
+                  {errors.fiatAmount && (
+                    <p className="text-sm text-destructive">{errors.fiatAmount}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground">
+                    ≈ {getExpectedCryptoAmount()} {getSelectedCrypto()?.symbol ?? ''}
+                  </p>
                 </div>
 
                 <div className="grid gap-2">
@@ -210,10 +305,10 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
                 <div className="text-sm">
                   <p className="font-medium">You will receive approximately:</p>
                   <p className="text-lg font-bold text-primary">
-                    {getExpectedCryptoAmount()} {getSelectedCrypto().symbol}
+                    {getExpectedCryptoAmount()} {getSelectedCrypto()?.symbol ?? ""}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Rate: 1 {fiatCurrency} = {getRateForPair(fiatCurrency, toCryptoId)} {getSelectedCrypto().symbol}
+                    Rate: 1 {fiatCurrency} = {getRateForPair(fiatCurrency, toCryptoId)} {getSelectedCrypto()?.symbol ?? ""}
                   </p>
                 </div>
               </div>
@@ -222,8 +317,40 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
             {step === 2 && (
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
+                  <Label htmlFor="account-name">Account Name</Label>
+                  <Input
+                    id="account-name"
+                    placeholder="Enter your name"
+                    value={accountName}
+                    onChange={handleAccountNameChange}
+                    className={errors.accountName ? "border-destructive" : ""}
+                  />
+                  {errors.accountName && (
+                    <p className="text-sm text-destructive">{errors.accountName}</p>
+                  )}
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="account-number">Account Number</Label>
+                  <Input
+                    id="account-number"
+                    placeholder={paymentMethod === "Mobile Money" ? "Enter phone number (e.g., +2567XXXXXXXX)" : "Enter account number"}
+                    value={accountNumber}
+                    onChange={handleAccountNumberChange}
+                    className={errors.accountNumber ? "border-destructive" : ""}
+                  />
+                  {errors.accountNumber && (
+                    <p className="text-sm text-destructive">{errors.accountNumber}</p>
+                  )}
+                </div>
+
+                <div className="grid gap-2">
                   <Label>Payment Method</Label>
-                  <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="grid grid-cols-2 gap-4">
+                  <RadioGroup 
+                    value={paymentMethod} 
+                    onValueChange={handlePaymentMethodChange} 
+                    className="grid grid-cols-2 gap-4"
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="Mobile Money" id="r-mobile-money" />
                       <Label htmlFor="r-mobile-money">Mobile Money</Label>
@@ -235,24 +362,8 @@ export default function ReceiveModal({ open, onOpenChange, cryptoCurrencies }: R
                   </RadioGroup>
                 </div>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="r-account-name">Account Name</Label>
-                  <Input
-                    id="r-account-name"
-                    placeholder="Enter your name"
-                    value={accountName}
-                    onChange={(e) => setAccountName(e.target.value)}
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="r-account-number">Account Number</Label>
-                  <Input
-                    id="r-account-number"
-                    placeholder={paymentMethod === "Mobile Money" ? "Enter phone number" : "Enter account number"}
-                    value={accountNumber}
-                    onChange={(e) => setAccountNumber(e.target.value)}
-                  />
+                <div className="text-sm text-muted-foreground">
+                  <p>Make sure your account details are correct before proceeding.</p>
                 </div>
               </div>
             )}
