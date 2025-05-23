@@ -4,8 +4,11 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 // import { useConnect } from "wagmi";
 // import { InjectedConnector } from 'wagmi/connectors/injected'
-import { useConnect } from 'wagmi'
+import { useConnect, useAccount, useDisconnect } from 'wagmi'
 import { injected } from "@wagmi/connectors";
+
+const { address, isConnected } = useAccount();
+const { disconnect } = useDisconnect();
 
 
 interface HeaderProps {
@@ -37,10 +40,20 @@ export default function Header({ onSettingsClick }: HeaderProps) {
 
   async function connectAccountWallet()
   {
-          // The code must run in a browser environment and not in node environment
+          
+    
+    
+    
+    // The code must run in a browser environment and not in node environment
           if (window && window.ethereum) {
             // User has a injected wallet
 
+
+            // connect to wallet connect here
+            alert("connect to wallet connect here");
+
+
+            // connect to mini pay 
             if (window.ethereum.isMiniPay) {
               // User is using Minipay
 
