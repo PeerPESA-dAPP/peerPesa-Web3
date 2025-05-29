@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { Web3ModalProvider } from "@/components/Web3ModalProvider"
+import { modal } from '@/context'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   title: "PeerPesa - Web3 Wallet",
   description: "Send, receive, and swap cryptocurrencies with PeerPesa",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
-    generator: 'v0.dev'
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
