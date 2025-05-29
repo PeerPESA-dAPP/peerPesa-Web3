@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { Web3ModalProvider } from "@/components/Web3ModalProvider"
-import { modal } from '@/context'
+import { AppKitInitializer } from "@/components/AppKitInitializer"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <AppKitInitializer />
         <Web3ModalProvider>
           {children}
         </Web3ModalProvider>

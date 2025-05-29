@@ -6,9 +6,10 @@ import { useConnect, useDisconnect, useAccount, useSwitchChain } from 'wagmi'
 import { injected } from "@wagmi/connectors";
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useClientMounted } from "@/hooks/useClientMount";
-import {
-          useAppKitEvents
-        } from '@reown/appkit/react'
+    import {
+              useAppKitEvents
+            } from '@reown/appkit/react'
+import { useAppKit } from '@reown/appkit/react'
 interface HeaderProps {
   onSettingsClick: () => void
 }
@@ -22,7 +23,7 @@ export default function Header({ onSettingsClick }: HeaderProps) {
   const { switchChain } = useSwitchChain();
   const { address, isConnected } = useAccount();
   const mounted = useClientMounted();
-  const events = useAppKitEvents()
+  // const events = useAppKitEvents()
 
   useEffect(() => {
     if (isConnected && address) {
@@ -94,9 +95,9 @@ export default function Header({ onSettingsClick }: HeaderProps) {
     }
   }
 
-  useEffect(() => {
-    console.log("Events: ", events);
-  }, [events]);
+  // useEffect(() => {
+  //   console.log("Events: ", events);
+  // }, [events]);
 
   return (
     <header className="sticky top-0 z-10 border-b bg-white shadow-sm">

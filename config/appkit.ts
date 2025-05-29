@@ -1,22 +1,16 @@
-import { createWagmiAdapter } from '@reown/appkit/wagmi'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { wagmiConfig } from '@/lib/walletConnect'
 import { PROJECT_ID } from './index'
-import type { AppKitNetwork } from '@reown/appkit'
 
 // Create the wagmi adapter for AppKit
-export const wagmiAdapter = createWagmiAdapter({
-  wagmiConfig,
-  projectId: PROJECT_ID
+export const wagmiAdapter = new WagmiAdapter({
+  networks: [...wagmiConfig.chains],
+  projectId: PROJECT_ID,
+  wagmiConfig
 })
 
 // Export the project ID
 export { PROJECT_ID as projectId }
 
-// Convert wagmi chains to AppKit networks
-export const networks: AppKitNetwork[] = wagmiConfig.chains.map(chain => ({
-  id: chain.id,
-  name: chain.name,
-  rpcUrl: chain.rpcUrls.default.http[0],
-  blockExplorerUrl: chain.blockExplorers?.default?.url,
-  nativeCurrency: chain.nativeCurrency
-})) 
+// Export wagmi chains as networks
+export const networks = [...wagmiConfig.chains] 
