@@ -7,25 +7,7 @@ import { WagmiProvider, createConfig, http } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
 import { injected } from 'wagmi/connectors';
 import { sepolia } from 'wagmi/chains';
-
-// const config = createConfig({
-//   chains: [mainnet],
-//   connectors: [injected()],
-//   transports: {
-//     [mainnet.id]: http(), // or http('https://rpc-url')
-//   },
-// });
-// using test net 
-const config = createConfig({
-  chains: [sepolia],
-  connectors: [injected()],
-  transports: {
-    [sepolia.id]: http('https://sepolia.infura.io/v3/b5833426d2934f8caa7c1d3654cc967b'), // or Alchemy/Ankr
-  },
-});
-
-import Image from "next/image"
-import { ChevronRight } from "lucide-react"
+import { SendIcon, CreditCard, ArrowLeftRight, CheckCircle, Shield, Headphones, ChevronRight, Wallet } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -36,6 +18,9 @@ import ReceiveModal from "@/components/receive-modal"
 import SwapModal from "@/components/swap-modal"
 import SettingsModal from "@/components/settings-modal"
 import CryptoBalanceCard from "@/components/crypto-balance-card"
+import SendMoney from "./exchange/SendMoney";
+import Link from "next/link"
+import Image from "next/image"
 
 const queryClient = new QueryClient()
 
@@ -50,45 +35,18 @@ interface CryptoCurrency {
   color: string
 }
 
+// using test net 
+const config = createConfig({
+  chains: [sepolia],
+  connectors: [injected()],
+  transports: {
+    [sepolia.id]: http('https://sepolia.infura.io/v3/b5833426d2934f8caa7c1d3654cc967b'), // or Alchemy/Ankr
+  },
+});
+
 export default function Home() {
   // Updated cryptocurrency data with actual logo images
   const cryptoCurrencies: CryptoCurrency[] = [
-    // {
-    //   id: "usdt",
-    //   name: "Tether",
-    //   symbol: "USDT",
-    //   balance: "350.75",
-    //   fiatValue: "$350.75",
-    //   icon: <Image src="/images/tether-usdt-logo.png" alt="USDT" width={24} height={24} className="w-6 h-6" />,
-    //   color: "#26A17B",
-    // },
-    // {
-    //   id: "usdc",
-    //   name: "USD Coin",
-    //   symbol: "USDC",
-    //   balance: "425.50",
-    //   fiatValue: "$425.50",
-    //   icon: <Image src="/images/usd-coin-usdc-logo.png" alt="USDC" width={24} height={24} className="w-6 h-6" />,
-    //   color: "#2775CA",
-    // },
-    // {
-    //   id: "cusd",
-    //   name: "Celo Dollar",
-    //   symbol: "cUSD",
-    //   balance: "210.25",
-    //   fiatValue: "$210.25",
-    //   icon: <Image src="/images/cusd-logo.png" alt="cUSD" width={24} height={24} className="w-6 h-6" />,
-    //   color: "#35D07F",
-    // },
-    // {
-    //   id: "celo",
-    //   name: "Celo",
-    //   symbol: "CELO",
-    //   balance: "45.75",
-    //   fiatValue: "$68.63",
-    //   icon: <Image src="/images/celo-celo-logo.png" alt="CELO" width={24} height={24} className="w-6 h-6" />,
-    //   color: "#FBCC5C",
-    // },
   ]
 
   const [selectedCrypto, setSelectedCrypto] = useState<CryptoCurrency>(cryptoCurrencies[0] ?? {})
@@ -134,47 +92,13 @@ export default function Home() {
               </div>
               <CardDescription className="text-right text-gray-600">≈ {selectedCrypto.fiatValue} USD</CardDescription>
             </CardHeader>
-            <CardContent className="p-4">
-              <div className="grid grid-cols-3 gap-3">
-                <Button
-                  onClick={() => setSendOpen(true)}
-                  className="flex items-center justify-center h-12 space-x-2 bg-red-600 hover:bg-red-700 text-white rounded-md"
-                >
-                  <Image src="/images/send.svg" alt="Send" width={20} height={20} className="text-white" />
-                  <span>Send</span>
-                </Button>
-                <Button
-                  onClick={() => setReceiveOpen(true)}
-                  className="flex items-center justify-center h-12 space-x-2 bg-primary hover:bg-primary/90 text-white rounded-md"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="20"
-                    height="20"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 6v12" />
-                    <path d="M8 10h8" />
-                  </svg>
-                  <span>Buy</span>
-                </Button>
-                <Button
-                  onClick={() => setSwapOpen(true)}
-                  className="flex items-center justify-center h-12 space-x-2 bg-gray-300 hover:bg-gray-400 text-black rounded-md"
-                >
-                  <Image src="/images/swap-black.svg" alt="Swap" width={20} height={20} className="text-black" />
-                  <span>Swap</span>
-                </Button>
-              </div>
-            </CardContent>
           </Card>
 
+          
+          <div className="mb-6">
+           <SendMoney />
+          </div>
+            
           {/* Other Cryptocurrencies */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-3">

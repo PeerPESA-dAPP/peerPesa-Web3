@@ -92,3 +92,234 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+
+/* Add custom hover color for send money button */
+.bg-peerpesa-red {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 0 76 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-peerpesa-red-dark:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(220 0 66 / var(--tw-bg-opacity));
+}
+
+/* Add active state for red button */
+.active\:bg-red-700:active {
+  --tw-bg-opacity: 1;
+  background-color: rgb(185 0 56 / var(--tw-bg-opacity));
+}
+
+.focus\:bg-red-700:focus {
+  --tw-bg-opacity: 1;
+  background-color: rgb(185 0 56 / var(--tw-bg-opacity));
+}
+
+/* Add dark button styles for swap button */
+.bg-peerpesa-dark {
+  --tw-bg-opacity: 1;
+  background-color: rgb(34 34 34 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-peerpesa-dark-hover:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(51 51 51 / var(--tw-bg-opacity));
+}
+
+/* Add styling for the step numbers in How PeerPesa Works section */
+.step-number {
+  @apply text-sm opacity-50;
+}
+
+/* Features section styles */
+.feature-card {
+  @apply rounded-[20px] p-6 md:p-8 hover:shadow-xl transition-shadow w-full;
+}
+
+/* Desktop-specific height adjustment for feature cards */
+@media (min-width: 769px) {
+  .feature-card {
+    @apply min-h-[280.5px]; /* Adjusted to exactly 280.5px as requested */
+  }
+}
+
+/* Features section responsive adjustments */
+@media (max-width: 768px) {
+  .feature-card {
+    @apply p-5 min-h-[220px];
+  }
+  
+  .feature-card-icon {
+    @apply w-12 h-12 mb-4;
+  }
+  
+  .feature-card-title {
+    @apply text-base leading-snug;
+  }
+}
+
+/* 2FA Input Field Styling */
+.otp-input-group {
+  @apply flex justify-center gap-2;
+}
+
+.otp-input-slot:focus {
+  @apply transform scale-105;
+}
+
+.otp-container {
+  @apply relative;
+}
+
+.otp-digit-indicator {
+  @apply absolute -bottom-6 flex justify-center w-full gap-2;
+}
+
+.otp-dot {
+  @apply h-1.5 w-1.5 rounded-full bg-gray-300;
+}
+
+/* Verify button enhancements */
+.verify-button {
+  @apply bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600
+         text-white font-medium rounded-full w-full py-3 mt-8 transition-all duration-200
+         hover:shadow-lg hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500;
+}
+
+/* Back to login button enhancements */
+.back-button {
+  @apply text-gray-500 hover:text-gray-700 hover:underline transition-colors mt-4 inline-block;
+}
+
+/* Google button styling - Improved */
+.google-button-content {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  position: relative !important;
+  height: 42px !important;
+  overflow: visible !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.google-button-content iframe {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+/* Hide the default Google icon from the button */
+.google-button-content svg {
+  display: none !important;
+}
+
+.button-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  min-height: 42px !important;
+}
+
+/* Google icon styling */
+.google-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  height: 24px;
+  width: 24px;
+}
+
+.google-icon {
+  height: 20px;
+  width: 20px;
+}
+
+/* Fix for Google button content */
+.google-button-content {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.phone-input {
+  @apply w-full;
+}
+
+.google-button-content div {
+  box-shadow: none !important;
+  z-index: 5 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+}
+
+.login-with-google {
+  z-index: 5 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #333 !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  padding: 4px !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  user-select: none !important;
+}
+
+.phone-input .form-control {
+  height: 42px !important;
+  width: 100%;
+  border-radius: var(--radius) !important;
+  border-width: 1px !important;
+  --tw-border-opacity: 1 !important;
+  border-color: rgb(57 182 98 / var(--tw-border-opacity, 1)) !important;
+  background-color: hsl(var(--background)) !important;
+  padding-left: 3rem !important;
+  padding-right: 1rem !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  font-size: 1rem !important;
+  line-height: 1.5rem !important;
+  --tw-ring-offset-color: hsl(var(--background)) !important;
+}
+
+.bg-black\/5 {
+  background-color: #0000000d;
+}
+
+
+
+.border-red-500{
+  border: 2px solid red;
+}
