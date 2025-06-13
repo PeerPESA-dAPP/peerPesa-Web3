@@ -26,7 +26,7 @@ import Link from "next/link"
 import Image from "next/image"
 import Footer from "@/components/Footer"
 import { useCurrencies } from "@/hooks/useCurrencies"
-import { usePaymentWallets } from "@/hooks/useCurrencies"
+import { usePaymentWallets, useWithdrawRates } from "@/hooks/useCurrencies"
 
 const queryClient = new QueryClient()
 
@@ -37,6 +37,7 @@ interface CryptoCurrency {
   symbol: string
   balance: string
   fiatValue: string
+  token_type: string
   icon: React.ReactNode
   color: string
   price: any
@@ -57,18 +58,23 @@ export default function Home() {
   // const { paymentWallets, loading: walletsLoading, error: walletsError } = usePaymentWallets();
   const [selectedTab, setSelectedTab] = useState<"send" | "buy" | "swap">("send")
   const [selectedNav, setSelectedNav] = useState<"home" | "send" | "transactions">("home")
+  const [defaultCurrency, setDefaultCurrency] = useState("USD")
+  
+  // Fetch withdraw rates for the default currency
+  const { withdrawRates, loading: withdrawRatesLoading, error: withdrawRatesError } = useWithdrawRates(defaultCurrency);
 
   // Convert supported currencies to crypto currency format with mock data
   const cryptoCurrencies: CryptoCurrency[] = (supportedCurrencies || []).map((currency) => ({
-    id: currency.id,
-    name: currency.name,
-    symbol: currency.symbol,
+    id: currency?.id,
+    name: currency?.name,
+    symbol: currency?.symbol,
+    token_type: currency?.token_type,
     balance: "0.0000", // Mock balance
     fiatValue: "0.00", // Mock fiat value
-    price: currency.price,
-    icon: currency.logo ? (
+    price: currency?.price,
+    icon: currency?.icon ? (
       <img 
-        src={currency.logo} 
+        src={`/flags/${currency?.symbol?.toLowerCase()}.png`} 
         alt={currency.name} 
         className="w-8 h-8 rounded-full"
       />
@@ -86,6 +92,7 @@ export default function Home() {
     symbol: "",
     balance: "0.0000",
     fiatValue: "0.00",
+    token_type: "",
     icon: <div className="w-8 h-8 rounded-full bg-gray-300" />,
     color: "#3B82F6",
     price: {
@@ -116,7 +123,6 @@ export default function Home() {
   const updateBalance = (cryptoId: string, newBalance: string) => {
 
      ///
-
     const updatedCurrencies = cryptoCurrencies.map((crypto) => {
       if (crypto.id === cryptoId) {
         return { ...crypto, balance: newBalance }
@@ -153,7 +159,10 @@ export default function Home() {
         <Header onSettingsClick={() => setSettingsOpen(true)} />
 
         <main className="flex-1 p-4 pt-6 md:p-6">
+
+
           {/* Main Balance Card */}
+          {(selectedNav === "home" || selectedNav === "transactions") && (
           <Card className="mb-6 border-none shadow-lg overflow-hidden">
             <CardHeader className="pb-3 bg-gray-300 text-gray-800">
               <CardDescription className="text-gray-600">Your Balance</CardDescription>
@@ -166,28 +175,81 @@ export default function Home() {
               <CardDescription className="text-right text-gray-600">≈ {selectedCrypto.fiatValue} USD</CardDescription>
             </CardHeader>
           </Card>
+          )}
 
 
           {/* Other Cryptocurrencies */}
           {selectedNav === "home" && (
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
-                <h2 className="text-lg font-semibold text-secondary">Your Assets</h2>
+                <h2 className="text-lg font-semibold text-secondary">Assets</h2>
                 <Button variant="ghost" size="sm" className="text-primary hidden">
                   View All <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
 
               <div className="grid grid-cols-1 gap-4">
-                {cryptoCurrencies.length > 0 && cryptoCurrencies.map((crypto) => (
+                {cryptoCurrencies.length > 0 && cryptoCurrencies.filter((crypto: any) => crypto?.token_type === "Native").map((crypto: any) => (
                   <CryptoBalanceCard
                     key={crypto.id}
                     crypto={crypto}
+                    defaultCurrency={defaultCurrency}
+                    yellowCardRates={withdrawRates?.data?.rates?.find((rate: any) => rate.code.toLowerCase() === crypto.symbol.toLowerCase())}
                     isSelected={selectedCrypto.id === crypto.id}
                     onClick={() => setSelectedCrypto(crypto)}
                   />
                 ))}
               </div>
+
+              {/* Withdraw Rates Section */}
+              {withdrawRates?.data?.rates && withdrawRates.data.rates.length > 0 && (
+                <div className="mt-8">
+                  <div className="flex justify-between items-center mb-3">
+                    <h2 className="text-lg font-semibold text-secondary">Exchange Rates ({defaultCurrency})</h2>
+                    <Button variant="ghost" size="sm" className="text-primary">
+                      View All <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3">
+                    {withdrawRates.data.rates.slice(0, 8).map((rate) => (
+                      <Card key={rate.code} className="p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                              <span className="text-sm font-semibold text-gray-600">
+                                {rate.locale === 'crypto' ? 'CT' : 'FI'}
+                              </span>
+                            </div>
+                            <div>
+                              <h3 className="font-medium text-gray-900">{rate.code}</h3>
+                              <p className="text-sm text-gray-500">{rate.rateId}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-medium text-gray-900">Buy: {rate.buy}</p>
+                            <p className="text-sm text-gray-500">Sell: {rate.sell}</p>
+                            <p className="text-xs text-gray-400">{new Date(rate.updatedAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Loading and Error States for Withdraw Rates */}
+              {withdrawRatesLoading && (
+                <div className="mt-8 text-center">
+                  <p className="text-gray-500">Loading exchange rates...</p>
+                </div>
+              )}
+              
+              {withdrawRatesError && (
+                <div className="mt-8 text-center">
+                  <p className="text-red-500">Error loading exchange rates: {withdrawRatesError}</p>
+                </div>
+              )}
 
               {/* Payment Wallets Section */}
               {/* {(paymentWallets || []).length > 0 && (

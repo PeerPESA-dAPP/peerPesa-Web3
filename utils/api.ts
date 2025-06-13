@@ -7,16 +7,26 @@ export interface SupportedCurrency {
   symbol: string;
   code: string;
   logo?: string;
+  icon?: string;
   isActive: boolean;
+  token_type: string;
+  price: any;
 }
 
 export interface WithdrawRate {
-  currency: string;
-  rate: number;
-  fee: number;
-  minAmount: number;
-  maxAmount: number;
-  processingTime: string;
+  buy: number;
+  sell: number;
+  locale: string;
+  rateId: string;
+  code: string;
+  updatedAt: string;
+}
+
+export interface WithdrawRatesResponse {
+  status: boolean;
+  data: {
+    rates: WithdrawRate[];
+  };
 }
 
 export interface PaymentWallet {
@@ -81,9 +91,9 @@ export const peerPesaAPI = {
   },
 
   // Fetch withdraw rates for a specific currency
-  getWithdrawRates: async (currency: string): Promise<ApiResponse<WithdrawRate[]>> => {
+  getWithdrawRates: async (currency: string): Promise<ApiResponse<WithdrawRatesResponse>> => {
     const endpoint = `${API_ENDPOINTS.WITHDRAW_RATES}?currency=${currency.toUpperCase()}`;
-    return fetchFromAPI<WithdrawRate[]>(endpoint);
+    return fetchFromAPI<WithdrawRatesResponse>(endpoint);
   },
 
   // Fetch payment wallets

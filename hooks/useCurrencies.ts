@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { peerPesaAPI, SupportedCurrency, PaymentWallet } from '@/utils/api';
+import { peerPesaAPI, SupportedCurrency, PaymentWallet, WithdrawRatesResponse } from '@/utils/api';
 
 export const useCurrencies = () => {
   const [currencies, setCurrencies] = useState<SupportedCurrency[]>([]);
@@ -77,4 +77,40 @@ export const usePaymentWallets = () => {
   }, []);
 
   return { paymentWallets, loading, error };
+};
+
+export const useWithdrawRates = (currency: string) => {
+  const [withdrawRates, setWithdrawRates] = useState<WithdrawRatesResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchWithdrawRates = async () => {
+      if (!currency) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await peerPesaAPI.getWithdrawRates(currency);
+        
+        if (response.success && response.data) {
+          setWithdrawRates(response.data);
+        } else {
+          setError(response.error || 'Failed to fetch withdraw rates');
+          setWithdrawRates(null);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch withdraw rates');
+        setWithdrawRates(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWithdrawRates();
+  }, [currency]);
+
+  return { withdrawRates, loading, error };
 }; 
