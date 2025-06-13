@@ -210,10 +210,10 @@ const BuyCrypto: React.FC = () => {
    const initFun = async() => {
 
       const constCurrent: any  = rates?.filter((rate: any) => rate.symbol.toUpperCase() === cryptoCurrency.toUpperCase())
-      if(constCurrent[0].price.amount) {
-        setCurrentRates(constCurrent[0].price.amount);
+      if(constCurrent[0]?.price?.amount) {
+        setCurrentRates(constCurrent[0]?.price?.amount);
       }else{
-        setCurrentRates(0);
+        setCurrentRates("0");
       }
       await handleSpendAmountChange(spendAmount);
    } 
