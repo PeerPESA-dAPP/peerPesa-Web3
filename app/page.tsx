@@ -39,6 +39,7 @@ interface CryptoCurrency {
   fiatValue: string
   icon: React.ReactNode
   color: string
+  price: any
 }
 
 // using test net 
@@ -53,7 +54,7 @@ const config = createConfig({
 export default function Home() {
   // Updated cryptocurrency data with actual logo images
   const { currencies: supportedCurrencies, loading, error } = useCurrencies();
-  const { paymentWallets, loading: walletsLoading, error: walletsError } = usePaymentWallets();
+  // const { paymentWallets, loading: walletsLoading, error: walletsError } = usePaymentWallets();
   const [selectedTab, setSelectedTab] = useState<"send" | "buy" | "swap">("send")
   const [selectedNav, setSelectedNav] = useState<"home" | "send" | "transactions">("home")
 
@@ -64,6 +65,7 @@ export default function Home() {
     symbol: currency.symbol,
     balance: "0.0000", // Mock balance
     fiatValue: "0.00", // Mock fiat value
+    price: currency.price,
     icon: currency.logo ? (
       <img 
         src={currency.logo} 
@@ -85,7 +87,19 @@ export default function Home() {
     balance: "0.0000",
     fiatValue: "0.00",
     icon: <div className="w-8 h-8 rounded-full bg-gray-300" />,
-    color: "#3B82F6"
+    color: "#3B82F6",
+    price: {
+      amount: 0.00,
+      currency: "USD",
+      id: "",
+      base_coin: "",
+      quote_coin: "USD",
+      buy_markup: 0,
+      sell_markup: 0,
+      exchange_markup: 0,
+      source: "",
+      status: "active"
+    }
   })
   const [sendOpen, setSendOpen] = useState(false)
   const [receiveOpen, setReceiveOpen] = useState(false)
@@ -128,12 +142,6 @@ export default function Home() {
   }
 
 
-
-
-
-
-
-
   
   // Update the main container to maintain mobile width on desktop
   // Change the outer div to add a max-width and center it
@@ -160,28 +168,12 @@ export default function Home() {
           </Card>
 
 
-          {selectedNav === "send" && (
-            
-             <>
-                <div className="mb-6">
-                  <TabButtons activeTab={selectedTab} onTabChange={onTabChangeFinal} />
-                </div>
-                
-                <div className="mb-6">
-                {selectedTab === "send" && <SendMoney />}
-                {selectedTab === "buy" && <BuyCrypto />}
-                {selectedTab === "swap" && <SwapCrypto />}
-                </div>
-             </>
-
-          )}
-
           {/* Other Cryptocurrencies */}
           {selectedNav === "home" && (
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
                 <h2 className="text-lg font-semibold text-secondary">Your Assets</h2>
-                <Button variant="ghost" size="sm" className="text-primary">
+                <Button variant="ghost" size="sm" className="text-primary hidden">
                   View All <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
@@ -198,7 +190,7 @@ export default function Home() {
               </div>
 
               {/* Payment Wallets Section */}
-              {(paymentWallets || []).length > 0 && (
+              {/* {(paymentWallets || []).length > 0 && (
                 <div className="mt-8">
                   <div className="flex justify-between items-center mb-3">
                     <h2 className="text-lg font-semibold text-secondary">Payment Wallets</h2>
@@ -234,21 +226,41 @@ export default function Home() {
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Loading and Error States */}
-              {walletsLoading && (
+              {/* {walletsLoading && (
                 <div className="mt-8 text-center">
-                  <p className="text-gray-500">Loading payment wallets...</p>
+                  <p className="text-gray-500">Loading supported currencies...</p>
                 </div>
               )}
               
               {walletsError && (
                 <div className="mt-8 text-center">
-                  <p className="text-red-500">Error loading payment wallets: {walletsError}</p>
+                  <p className="text-red-500">Error loading supported currencies: {walletsError}</p>
                 </div>
-              )}
+              )} */}
             </div>
+          )}
+
+
+
+
+
+          {selectedNav === "send" && (
+            
+             <>
+                <div className="mb-6">
+                  <TabButtons activeTab={selectedTab} onTabChange={onTabChangeFinal} />
+                </div>
+                
+                <div className="mb-6">
+                {selectedTab === "send" && <SendMoney />}
+                {selectedTab === "buy" && <BuyCrypto />}
+                {selectedTab === "swap" && <SwapCrypto />}
+                </div>
+             </>
+
           )}
 
 

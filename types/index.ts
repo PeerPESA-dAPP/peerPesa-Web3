@@ -14,10 +14,25 @@ export interface Currency {
 }
 
 export interface CryptoCurrency {
-  code: string;
+  id: string;
   name: string;
-  isCrypto: boolean;
-  logo: string;
+  symbol: string;
+  balance: string;
+  fiatValue: string;
+  icon: React.ReactNode;
+  color: string;
+  price: {
+    amount: string;
+    currency: string;
+    id: string;
+    base_coin: string;
+    quote_coin: string;
+    buy_markup: number;
+    sell_markup: number;
+    exchange_markup: number;
+    source: string;
+    status: string;
+  };
 }
 
 export interface Wallet {

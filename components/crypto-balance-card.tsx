@@ -12,6 +12,7 @@ interface CryptoCurrency {
   fiatValue: string
   icon: React.ReactNode
   color: string
+  price: any
 }
 
 interface CryptoBalanceCardProps {
@@ -40,7 +41,7 @@ export default function CryptoBalanceCard({ crypto, isSelected, onClick }: Crypt
           </div>
           <div className="text-right">
             <p className="font-semibold text-secondary">{crypto.balance}</p>
-            <p className="text-sm text-gray-500">{crypto.fiatValue}</p>
+            <p className="text-sm text-gray-500">1 {crypto?.price?.base_coin}/ {Number(crypto?.price?.amount).toFixed(4)} {crypto?.price?.quote_coin}</p>
           </div>
         </div>
       </CardContent>
