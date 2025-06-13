@@ -323,3 +323,8 @@ body {
 .border-red-500{
   border: 2px solid red;
 }
+
+.bg-peerpesa-primary {
+  --tw-bg-opacity: 1;
+  background-color: rgb(57 182 98 / var(--tw-bg-opacity, 1));
+}

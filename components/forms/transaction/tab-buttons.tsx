@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
@@ -12,12 +12,19 @@ interface TabButtonsProps {
 
 
 export const TabButtons: React.FC<TabButtonsProps> = ({ activeTab, onTabChange }) => {
-  
+  const [selectedTab, setSelectedTab] = useState("send");
+
+  const handleTabChange = async   (tab: "send" | "buy" | "swap") => {
+     setSelectedTab(tab);
+     await onTabChange?.(tab);
+  };
+
+
   return (
     <div className="flex rounded-2xl overflow-hidden w-full mb-6 bg-black/5 p-1">
       <Button
         variant="ghost"
-        onClick={() => onTabChange?.("send")}
+        onClick={() => handleTabChange("send")}
         className={cn(
           "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-base transition-all",
           activeTab === "send" 
@@ -40,7 +47,7 @@ export const TabButtons: React.FC<TabButtonsProps> = ({ activeTab, onTabChange }
 
       <Button
         variant="ghost"
-        onClick={() => onTabChange?.("buy")}
+        onClick={() => handleTabChange("buy")}
         className={cn(
           "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-base transition-all",
           activeTab === "buy" 
@@ -56,13 +63,13 @@ export const TabButtons: React.FC<TabButtonsProps> = ({ activeTab, onTabChange }
           )}
           alt="Buy Crypto"
         />
-        <span>Buy</span>
+        <span>Buy {selectedTab}</span>
       </Button>
 
 
       <Button
         variant="ghost"
-        onClick={() => onTabChange?.("swap")}
+        onClick={() => handleTabChange("swap")}
         className={cn(
           "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-base transition-all",
           activeTab === "swap" 

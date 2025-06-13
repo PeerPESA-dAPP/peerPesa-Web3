@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from "react";
-import { TabButtons } from "@/components/transaction/tab-buttons";
 import { AmountInput } from "@/components/transaction/amount-input";
 import { CurrencySelect } from "@/components/transaction/currency-select";
 import { TransactionSummary } from "@/components/transaction/transaction-summary";
@@ -10,8 +9,8 @@ import { ArrowLeftRight as SwapIcon, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TransactionStep } from "@/types";
-import { useCurrency } from "@/context/CurrencyContext";
-import { formatAmount } from "@/helpers/format";
+// import { useCurrency } from "@/context/CurrencyContext";
+// import { formatAmount } from "@/helpers/format";
 
 // Static data - in a real application this would come from an API
 const cryptoCurrencies = [
@@ -49,7 +48,7 @@ const SwapCrypto: React.FC = () => {
   const [fromCurrency, setFromCurrency] = useState<string>("CELO");
   const [toCurrency, setToCurrency] = useState<string>("USDT");
   const [toAmount, setToAmount] = useState<string>("0");
-  const { fetchCurrencyExchangeRates } = useCurrency();
+  // const { fetchCurrencyExchangeRates } = useCurrency();
 
   
   const [rates, setRates] = useState<any[]>([]);
@@ -147,10 +146,10 @@ const SwapCrypto: React.FC = () => {
      if(fromCurrency === null){
       return;
      }  
-     const eRates  =   await  fetchCurrencyExchangeRates({quote_coin: fromCurrency});
-     const constCurrent: any  = eRates?.data.filter((rate: any) => rate.symbol.toUpperCase() === toCurrency.toUpperCase())
-     setCurrentRates(constCurrent[0].price.amount);
-     setRates(eRates?.data ?? []);
+    //  const eRates  =   await  fetchCurrencyExchangeRates({quote_coin: fromCurrency});
+    //  const constCurrent: any  = eRates?.data.filter((rate: any) => rate.symbol.toUpperCase() === toCurrency.toUpperCase())
+    //  setCurrentRates(constCurrent[0].price.amount);
+    //  setRates(eRates?.data ?? []);
 
    } 
    initFun();
@@ -270,8 +269,7 @@ const SwapCrypto: React.FC = () => {
   };
 
   return (
-      <div className="container max-w-md mx-auto">
-        <TabButtons activeTab="swap" />
+      <div className="container_ max-w-md_ mx-auto_">
         {renderTransactionStep()}
         
         <ConfirmationDialog

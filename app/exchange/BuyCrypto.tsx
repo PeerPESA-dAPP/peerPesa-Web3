@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { TabButtons } from "@/components/transaction/tab-buttons";
 import { AmountInput } from "@/components/transaction/amount-input";
 import { CurrencySelect } from "@/components/transaction/currency-select";
 import { PaymentMethodSelect } from "@/components/transaction/payment-method-select";
@@ -11,8 +10,8 @@ import { CreditCard, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TransactionStep } from "@/types";
-import { useCurrency } from "@/context/CurrencyContext";
-import { formatAmount } from "@/helpers/format";
+  // import { useCurrency } from "@/context/CurrencyContext";
+  // import { formatAmount } from "@/helpers/format";
 
 // Static data - in a real application this would come from an API
 const currencies = [
@@ -99,7 +98,7 @@ const BuyCrypto: React.FC = () => {
   // Form state
   const [spendAmount, setSpendAmount] = useState<string>("");
   const [fiatCurrency, setFiatCurrency] = useState<string>("UGX");
-  const { fetchCurrencyExchangeRates } = useCurrency();
+  // const { fetchCurrencyExchangeRates } = useCurrency();
   const [rates, setRates] = useState<any[]>([]);
   const [currentRates, setCurrentRates] = useState<string>("");
   const [defaultCurrency, setDefaultCurrency] = useState(fiatCurrency);
@@ -198,10 +197,10 @@ const BuyCrypto: React.FC = () => {
      if(fiatCurrency === null){
       return;
      }  
-     const eRates  =   await  fetchCurrencyExchangeRates({quote_coin: fiatCurrency});
-     const constCurrent: any  = eRates?.data.filter((rate: any) => rate.symbol.toUpperCase() === cryptoCurrency.toUpperCase())
-     setCurrentRates(constCurrent[0].price.amount);
-     setRates(eRates?.data ?? []);
+    //  const eRates  =   await  fetchCurrencyExchangeRates({quote_coin: fiatCurrency});
+    //  const constCurrent: any  = eRates?.data.filter((rate: any) => rate.symbol.toUpperCase() === cryptoCurrency.toUpperCase())
+    //  setCurrentRates(constCurrent[0].price.amount);
+    //  setRates(eRates?.data ?? []);
 
    } 
    initFun();
@@ -220,6 +219,11 @@ const BuyCrypto: React.FC = () => {
    } 
    initFun();
   }, [cryptoCurrency, rates, currentRates]);
+
+
+  const formatAmount = (amount: number, decimals: number) => {
+    return amount //.toFixed(decimals);
+  };
 
   const renderTransactionStep = () => {
     switch (currentStep) {
@@ -296,7 +300,7 @@ const BuyCrypto: React.FC = () => {
               <TransactionSummary details={[
                 { label: "You pay", value: `${spendAmount || "0"} ${fiatCurrency}` },
                 { label: "Exchange rate", value: `1 ${fiatCurrency} = ${formatAmount(1/currentRates, 4)} ${cryptoCurrency}` },
-                { label: "Fee", value: `${(Number(spendAmount || 0) * 0.01).toFixed(2)} ${fiatCurrency}` },
+                { label: "Fee", value: `${(Number(spendAmount || 0) * 0.01)?.toFixed(2)} ${fiatCurrency}` },
                 { label: "You receive", value: `${receiveAmount} ${cryptoCurrency}`, isTotal: true },
               ]} />
               
@@ -347,8 +351,7 @@ const BuyCrypto: React.FC = () => {
   };
 
   return (
-      <div className="container max-w-md mx-auto">
-        <TabButtons activeTab="buy" />
+      <div className="container_ max-w-md_ mx-auto_">
         {renderTransactionStep()}
         
         <ConfirmationDialog

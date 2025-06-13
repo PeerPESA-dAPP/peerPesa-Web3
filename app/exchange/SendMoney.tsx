@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
-import { TabButtons } from "@/components/transaction/tab-buttons";
 import { AmountInput } from "@/components/transaction/amount-input";
 import { CurrencySelect } from "@/components/transaction/currency-select";
 import { PaymentMethodSelect } from "@/components/transaction/payment-method-select";
@@ -331,19 +330,19 @@ useEffect(() => {
 
 useEffect(() => {
   const initFun = async() => {
-     const constCurrent: any  = rates?.filter((rate: any) => rate.symbol.toUpperCase() === receiveCurrency.toUpperCase())
-     if(constCurrent[0].price.amount) {
-       const ycRates: any  =  await  fetchYellowCardCurrencyExchangeRates({base_currency: receiveCurrency})
-       setCurrentRates(constCurrent[0].price.amount);
-     }else{
-       setCurrentRates("0");
-     }
-     const wallet = accountWallets.find((wallet: any) => wallet.symbol.toLowerCase() === receiveCurrency.toLowerCase());
-     if(wallet){
-       setSendWalletAmount(wallet?.wallet?.balance ?? 0);
-       setSendWallet(wallet?.wallet?.address ?? "");
-     }
-     handleSendAmountChange(sendAmount);
+    //  const constCurrent: any  = rates?.filter((rate: any) => rate.symbol.toUpperCase() === receiveCurrency.toUpperCase())
+    //  if(constCurrent[0].price.amount) {
+    //    const ycRates: any  =  await  fetchYellowCardCurrencyExchangeRates({base_currency: receiveCurrency})
+    //    setCurrentRates(constCurrent[0].price.amount);
+    //  }else{
+    //    setCurrentRates("0");
+    //  }
+    //  const wallet = accountWallets.find((wallet: any) => wallet.symbol.toLowerCase() === receiveCurrency.toLowerCase());
+    //  if(wallet){
+    //    setSendWalletAmount(wallet?.wallet?.balance ?? 0);
+    //    setSendWallet(wallet?.wallet?.address ?? "");
+    //  }
+    //  handleSendAmountChange(sendAmount);
      // await handleSpendAmountChange(spendAmount);
   } 
   initFun();
@@ -437,13 +436,15 @@ const manageTransferSlippage = async () => {
               
               <Button
                 type="submit"
-                variant="red"
+                variant="destructive"
                 disabled={!sendAmount || !paymentMethod || lessBalanceAlert != ""}
                 className="w-full text-white py-2.5 flex items-center justify-center gap-2 rounded-xl"
               >
                 <SendIcon className="h-4 w-4" />
                 <span>Review Transfer</span>
               </Button>
+
+              
             </form>
           </Card>
         );
@@ -486,7 +487,6 @@ const manageTransferSlippage = async () => {
   return (
       <div className="container_ max-w-md_ mx-auto_">
         
-        <TabButtons activeTab="send" />
         {renderTransactionStep()}
         <ConfirmationDialog
           open={showConfirmation}
