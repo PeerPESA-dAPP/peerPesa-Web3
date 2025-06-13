@@ -45,6 +45,8 @@ async function fetchFromAPI<T>(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
+    console.log(`Fetching from API: ${API_BASE_URL}${endpoint}`);
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       signal: controller.signal,
@@ -61,9 +63,12 @@ async function fetchFromAPI<T>(
     }
 
     const data = await response.json();
+    console.log(`API Response for ${endpoint}:`, data);
+    
     return { success: true, data };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error(`API Error for ${endpoint}:`, errorMessage);
     return { success: false, error: errorMessage };
   }
 }

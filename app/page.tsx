@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
@@ -58,7 +58,7 @@ export default function Home() {
   const [selectedNav, setSelectedNav] = useState<"home" | "send" | "transactions">("home")
 
   // Convert supported currencies to crypto currency format with mock data
-  const cryptoCurrencies: CryptoCurrency[] = supportedCurrencies.map((currency) => ({
+  const cryptoCurrencies: CryptoCurrency[] = (supportedCurrencies || []).map((currency) => ({
     id: currency.id,
     name: currency.name,
     symbol: currency.symbol,
@@ -78,7 +78,7 @@ export default function Home() {
     color: "#3B82F6" // Default blue color
   }));
 
-  const [selectedCrypto, setSelectedCrypto] = useState<CryptoCurrency>(cryptoCurrencies[0] ?? {
+  const [selectedCrypto, setSelectedCrypto] = useState<CryptoCurrency>({
     id: "",
     name: "",
     symbol: "",
@@ -92,9 +92,12 @@ export default function Home() {
   const [swapOpen, setSwapOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
-
-
-
+  // Update selectedCrypto when currencies load
+  useEffect(() => {
+    if (cryptoCurrencies.length > 0 && !selectedCrypto.id) {
+      setSelectedCrypto(cryptoCurrencies[0]);
+    }
+  }, [cryptoCurrencies, selectedCrypto.id]);
 
   const updateBalance = (cryptoId: string, newBalance: string) => {
 
@@ -195,7 +198,7 @@ export default function Home() {
               </div>
 
               {/* Payment Wallets Section */}
-              {paymentWallets.length > 0 && (
+              {(paymentWallets || []).length > 0 && (
                 <div className="mt-8">
                   <div className="flex justify-between items-center mb-3">
                     <h2 className="text-lg font-semibold text-secondary">Payment Wallets</h2>
@@ -205,7 +208,7 @@ export default function Home() {
                   </div>
 
                   <div className="grid grid-cols-1 gap-3">
-                    {paymentWallets.map((wallet) => (
+                    {(paymentWallets || []).map((wallet) => (
                       <Card key={wallet.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">

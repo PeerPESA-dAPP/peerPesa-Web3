@@ -13,12 +13,22 @@ export const useCurrencies = () => {
         const response = await peerPesaAPI.getSupportedCurrencies();
         
         if (response.success && response.data) {
-          setCurrencies(response.data);
+          // Handle different response structures
+          let data: SupportedCurrency[] = [];
+          if (Array.isArray(response.data)) {
+            data = response.data;
+          } else if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+            const nestedData = (response.data as any).data;
+            data = Array.isArray(nestedData) ? nestedData : [];
+          }
+          setCurrencies(data);
         } else {
           setError(response.error || 'Failed to fetch currencies');
+          setCurrencies([]);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch currencies');
+        setCurrencies([]);
       } finally {
         setLoading(false);
       }
@@ -42,12 +52,22 @@ export const usePaymentWallets = () => {
         const response = await peerPesaAPI.getPaymentWallets();
         
         if (response.success && response.data) {
-          setPaymentWallets(response.data);
+          // Handle different response structures
+          let data: PaymentWallet[] = [];
+          if (Array.isArray(response.data)) {
+            data = response.data;
+          } else if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+            const nestedData = (response.data as any).data;
+            data = Array.isArray(nestedData) ? nestedData : [];
+          }
+          setPaymentWallets(data);
         } else {
           setError(response.error || 'Failed to fetch payment wallets');
+          setPaymentWallets([]);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch payment wallets');
+        setPaymentWallets([]);
       } finally {
         setLoading(false);
       }
