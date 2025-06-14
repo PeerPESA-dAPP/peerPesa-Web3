@@ -25,7 +25,7 @@ interface CryptoBalanceCardProps {
 
 // Make sure the crypto balance cards are optimized for mobile view
 export default function CryptoBalanceCard({ crypto, isSelected, onClick, yellowCardRates, defaultCurrency }: CryptoBalanceCardProps) {
-  return (
+ return (
     <Card
       className={`cursor-pointer transition-all hover:shadow-md ${
         isSelected ? "border-primary border-2" : "border border-gray-200"
@@ -42,8 +42,8 @@ export default function CryptoBalanceCard({ crypto, isSelected, onClick, yellowC
             </div>
           </div>
           <div className="text-right">
-            <p className="font-semibold text-secondary">{crypto.balance}</p>
-            <p className="text-sm text-gray-500">1 {crypto?.price?.base_coin} / {( (Number(crypto?.price?.amount) < Number(yellowCardRates?.sell)) && !isNaN(Number(yellowCardRates?.sell)))?  Number(yellowCardRates?.sell).toFixed(4):Number(crypto?.price?.amount).toFixed(4)} {crypto?.price?.quote_coin ?? defaultCurrency}</p>
+            <p className="font-semibold text-secondary">Buy : {( (Number(crypto?.price?.amount) < Number(yellowCardRates?.sell)) && !isNaN(Number(yellowCardRates?.sell)))?  Number(1 /  yellowCardRates?.sell).toFixed(4):Number(1 / crypto?.price?.amount).toFixed(4)} {crypto?.price?.quote_coin ?? defaultCurrency} </p>
+            <p className="text-sm text-gray-500">Sell: {( (Number(crypto?.price?.amount) < Number(yellowCardRates?.sell)) && !isNaN(Number(yellowCardRates?.sell)))?  Number(1 /  yellowCardRates?.sell).toFixed(4):Number(1 / crypto?.price?.amount).toFixed(4)} {crypto?.price?.quote_coin ?? defaultCurrency}</p>
           </div>
         </div>
       </CardContent>

@@ -19,6 +19,8 @@ import ReceiveModal from "@/components/receive-modal"
 import SwapModal from "@/components/swap-modal"
 import SettingsModal from "@/components/settings-modal"
 import CryptoBalanceCard from "@/components/crypto-balance-card"
+import ForexBalanceCard from "@/components/forex-balance-card"  
+
 import SendMoney from "./exchange/SendMoney";
 import BuyCrypto from "./exchange/BuyCrypto";
 import SwapCrypto from "./exchange/SwapCrypto";
@@ -76,10 +78,10 @@ export default function Home() {
       <img 
         src={`/flags/${currency?.symbol?.toLowerCase()}.png`} 
         alt={currency.name} 
-        className="w-8 h-8 rounded-full"
+        className="w-9 h-8 rounded-full"
       />
     ) : (
-      <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+      <div className="w-9 h-8 rounded-full bg-gray-300 flex items-center justify-center">
         <span className="text-xs font-bold">{currency.symbol}</span>
       </div>
     ),
@@ -108,6 +110,7 @@ export default function Home() {
       status: "active"
     }
   })
+  const [selectedFiat, setSelectedFiat] = useState<CryptoCurrency>();
   const [sendOpen, setSendOpen] = useState(false)
   const [receiveOpen, setReceiveOpen] = useState(false)
   const [swapOpen, setSwapOpen] = useState(false)
@@ -201,8 +204,30 @@ export default function Home() {
                 ))}
               </div>
 
+
+
+              <div className="flex justify-between items-center mb-3 mt-4">
+                <h2 className="text-lg font-semibold text-secondary">Exchange Rates</h2>
+                <Button variant="ghost" size="sm" className="text-primary hidden">
+                  View All <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                {cryptoCurrencies.length > 0 && cryptoCurrencies.filter((crypto: any) => crypto?.token_type !== "Native").map((crypto: any) => (
+                  <ForexBalanceCard
+                    key={crypto.id}
+                    crypto={crypto}
+                    defaultCurrency={defaultCurrency}
+                    yellowCardRates={withdrawRates?.data?.rates?.find((rate: any) => rate.code.toLowerCase() === crypto.symbol.toLowerCase())}
+                    isSelected={selectedCrypto.id === crypto.id}
+                    onClick={() => setSelectedFiat(crypto)}
+                  />
+                ))}
+              </div>
+
               {/* Withdraw Rates Section */}
-              {withdrawRates?.data?.rates && withdrawRates.data.rates.length > 0 && (
+              {/* {withdrawRates?.data?.rates && withdrawRates.data.rates.length > 0 && (
                 <div className="mt-8">
                   <div className="flex justify-between items-center mb-3">
                     <h2 className="text-lg font-semibold text-secondary">Exchange Rates ({defaultCurrency})</h2>
@@ -212,7 +237,7 @@ export default function Home() {
                   </div>
 
                   <div className="grid grid-cols-1 gap-3">
-                    {withdrawRates.data.rates.slice(0, 8).map((rate) => (
+                    {withdrawRates.data.rates.filter((rate: any) => rate.code.toLowerCase() === cryptoCurrencies.find((crypto: any) => crypto.token_type === "fiat")?.symbol.toLowerCase()).slice(0, 8).map((rate: any) => (
                       <Card key={rate.code} className="p-4 hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
@@ -222,8 +247,8 @@ export default function Home() {
                               </span>
                             </div>
                             <div>
-                              <h3 className="font-medium text-gray-900">{rate.code}</h3>
-                              <p className="text-sm text-gray-500">{rate.rateId}</p>
+                              <h3 className="font-medium text-gray-900">{rate.code} {defaultCurrency}</h3>
+                              <p className="text-sm text-gray-500">{rate.rateId} {defaultCurrency}</p>
                             </div>
                           </div>
                           <div className="text-right">
@@ -236,10 +261,10 @@ export default function Home() {
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Loading and Error States for Withdraw Rates */}
-              {withdrawRatesLoading && (
+              {/* {withdrawRatesLoading && (
                 <div className="mt-8 text-center">
                   <p className="text-gray-500">Loading exchange rates...</p>
                 </div>
@@ -249,7 +274,7 @@ export default function Home() {
                 <div className="mt-8 text-center">
                   <p className="text-red-500">Error loading exchange rates: {withdrawRatesError}</p>
                 </div>
-              )}
+              )} */}
 
               {/* Payment Wallets Section */}
               {/* {(paymentWallets || []).length > 0 && (
