@@ -1,5 +1,3 @@
-PeerPesa Web3 is a decentralized cryptocurrency wallet application built with Next.js that enables users to manage digital assets, perform peer-to-peer transactions, and interact with multiple blockchain networks. The application provides a mobile-first interface for buying crypto, sending money, and swapping cryptocurrencies while maintaining Web3 wallet connectivity through WalletConnect protocol.
-
 # peerPesa Web3 dApp
 
 **peerPesa Web3** is a decentralized, cross-border payments application powered by blockchain and designed to connect **mobile money systems** (like M-Pesa, MTN MoMo) with **crypto networks** (e.g. Stellar, Celo, Ethereum). It allows users to securely **send**, **receive**, and **manage value** across borders with transparency and minimal friction.
